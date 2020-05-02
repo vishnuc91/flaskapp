@@ -3,6 +3,7 @@ from flask_restplus import Resource, Api, Namespace
 from datetime import datetime
 from pymongo import MongoClient
 import urllib
+import json
 
 
 username = urllib.parse.quote_plus('admin')
@@ -25,10 +26,12 @@ api = Api(app)
 class IOTSensor(Resource):
 
     def get(self):
+        sensor_data = []
         sensordatas = sensordata.find()
         for datas in sensordatas:
-            print (datas)
-        return {'hello': 'world'}
+            sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
+               "date": datas["date"], "time": datas["time"]})
+        return {'message': 'Successfull', 'data': sensor_data}
 
     # @api.doc(parser=parser)
     def post(self):
@@ -37,8 +40,8 @@ class IOTSensor(Resource):
         date_time = datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S")
         data= {"temperature": json_data["reading"], "sensortype": json_data["sensorType"],
                "date": date_time.date().isoformat(), "time": date_time.time().isoformat()}
-        print (data)
-        return {'message': 'Data Saved'}
+        sensor_data = sensordata.insert_one(data).inserted_id
+        return {'message': 'Data Saved', "id": str(sensor_data)}
 
 
 if __name__ == '__main__':
