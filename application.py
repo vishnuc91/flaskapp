@@ -2,8 +2,8 @@ from flask import Flask, request
 from flask_restplus import Resource, Api, Namespace
 from datetime import datetime
 from pymongo import MongoClient
+from flask_cors import CORS
 import urllib
-import json
 
 
 username = urllib.parse.quote_plus('admin')
@@ -17,9 +17,7 @@ sensordata = database["sensordata"]
 app = Flask(__name__)
 api = Api(app)
 
-# api = Namespace('Sensor Details', description='')
-# parser = api.parser()
-# parser.add_argument('temperature', type=str, help='project_name', location='form')
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
 @api.route('/home')
