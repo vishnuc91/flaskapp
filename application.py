@@ -19,6 +19,7 @@ api = Api(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
+
 @api.route('/home')
 class IOTSensor(Resource):
 
