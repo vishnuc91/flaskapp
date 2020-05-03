@@ -10,7 +10,6 @@ username = urllib.parse.quote_plus('admin')
 password = urllib.parse.quote_plus('Cr0$$t@b123')
 uri = "mongodb://{username}:{password}@localhost:27017/?authSource=admin".format(username=username, password=password)
 client = MongoClient(uri)
-
 database = client["iot"]
 sensordata = database["sensordata"]
 
@@ -43,4 +42,4 @@ class IOTSensor(Resource):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int("5000"), debug=True)
