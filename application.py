@@ -24,6 +24,7 @@ class IOTSensor(Resource):
 
     def get(self):
         sensor_data = []
+        aggregates = {}
         if len(request.args) > 0:
             from_date = request.args['from']
             to_date = request.args['to']
@@ -37,10 +38,15 @@ class IOTSensor(Resource):
                 return {'message': 'Successfull', 'data': 'No Data Available'}
         else:
             sensordatas = sensordata.find()
+            # Used mongo aggregations to query for mean ,max and min
+            aggregate_data = sensordata.aggregate([{'$group': {'_id': 'none', 'min': {"$min":"$temperature"},
+                                                               "max": {"$max":"$temperature"}, "avg": {"$avg":"$temperature"}}}])
+            for data in aggregate_data:
+                aggregates = data
             for datas in sensordatas:
                 sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
                    "date": datas["date"], "time": datas["time"]})
-            return {'message': 'Successfull', 'data': sensor_data}
+            return {'message': 'Successfull', 'data': sensor_data, 'aggregates': aggregates}
 
     # @api.doc(parser=parser)
     def post(self):
