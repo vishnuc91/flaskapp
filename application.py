@@ -19,17 +19,23 @@ api = Api(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 
-
 @api.route('/home')
 class IOTSensor(Resource):
 
     def get(self):
         sensor_data = []
-        sensordatas = sensordata.find()
-        for datas in sensordatas:
-            sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
-               "date": datas["date"], "time": datas["time"]})
-        return {'message': 'Successfull', 'data': sensor_data}
+        if len(request.args) > 0:
+            sensordatas = sensordata.find({'date': {'$lt': '2017-12-30', '$gte': '2017-09-23'}})
+            for datas in sensordatas:
+                sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
+                   "date": datas["date"], "time": datas["time"]})
+            return {'message': 'Successfull', 'data': sensor_data}
+        else:
+            sensordatas = sensordata.find()
+            for datas in sensordatas:
+                sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
+                   "date": datas["date"], "time": datas["time"]})
+            return {'message': 'Successfull', 'data': sensor_data}
 
     # @api.doc(parser=parser)
     def post(self):
