@@ -1,4 +1,4 @@
-# flaskapp
+# Project Description
 
 This Python Flask backend application contains backend services which fetches data from IOT device. Service is created for fetching temperature data based on date and time. I have used Mongo Database and Flask to create backend services.
 

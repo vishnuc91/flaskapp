@@ -27,12 +27,17 @@ class IOTSensor(Resource):
         if len(request.args) > 0:
             from_date = request.args['from']
             to_date = request.args['to']
-            sensordatas = sensordata.find({'date': {'$lt': to_date, '$gte': from_date}})
+            sensordatas = sensordata.find({'date': {'$lte': to_date, '$gte': from_date}})
+            aggregate_data = sensordata.aggregate([{'$match': {'date': {'$gte': from_date, '$lte': to_date}}}, {
+                '$group': {'_id': 'none', 'min': {'$min': "$temperature"}, 'max': {'$max': "$temperature"},
+                           'avg': {'$avg': "$temperature"}}}])
+            for data in aggregate_data:
+                aggregates = data
             for datas in sensordatas:
                 sensor_data.append({"temperature": datas["temperature"], "sensortype": datas["sensortype"],
                                     "date": datas["date"], "time": datas["time"]})
             if len(sensor_data) > 0:
-                return {'message': 'Successfull', 'data': sensor_data}
+                return {'message': 'Successfull', 'data': sensor_data, 'aggregates': aggregates}
             else:
                 return {'message': 'Successfull', 'data': 'No Data Available'}
         else:
