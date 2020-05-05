@@ -5,8 +5,8 @@ from pymongo import MongoClient
 from flask_cors import CORS
 import urllib
 
-username = urllib.parse.quote_plus('admin')
-password = urllib.parse.quote_plus('Cr0$$t@b123')
+username = urllib.parse.quote_plus('username here')
+password = urllib.parse.quote_plus('password here')
 uri = "mongodb://{username}:{password}@localhost:27017/?authSource=admin".format(username=username, password=password)
 client = MongoClient(uri)
 database = client["iot"]
