@@ -16,7 +16,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 class Test(Resource):
 
     def get(self):
-        return {"message": 'successfull', 'status': 200}
+        return {"message": 'successfull buddy', 'status': 200}
 
 
 @api.route('/home')
