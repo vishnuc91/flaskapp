@@ -22,7 +22,8 @@ class Test(Resource):
 @api.route('/home')
 class IOTSensor(Resource):
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.username = urllib.parse.quote_plus('admin')
         self.password = urllib.parse.quote_plus('Cr0$$t@b123')
         self.uri = "mongodb://{username}:{password}@localhost:27017/?authSource=admin".format(username=self.username,
