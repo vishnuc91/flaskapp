@@ -5,21 +5,31 @@ from pymongo import MongoClient
 from flask_cors import CORS
 import urllib
 
-username = urllib.parse.quote_plus('username here')
-password = urllib.parse.quote_plus('password here')
-uri = "mongodb://{username}:{password}@localhost:27017/?authSource=admin".format(username=username, password=password)
-client = MongoClient(uri)
-database = client["iot"]
-sensordata = database["sensordata"]
+
 
 app = Flask(__name__)
 api = Api(app)
 
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+@api.route('/test')
+class Test(Resource):
+
+    def get(self):
+        return {"message": 'successfull', 'status': 200}
+
 
 @api.route('/home')
 class IOTSensor(Resource):
+
+    def __init__(self):
+        self.username = urllib.parse.quote_plus('admin')
+        self.password = urllib.parse.quote_plus('Cr0$$t@b123')
+        self.uri = "mongodb://{username}:{password}@localhost:27017/?authSource=admin".format(username=self.username,
+                                                                                         password=self.password)
+        self.client = MongoClient(self.uri)
+        self.database = self.client["iot"]
+        self.sensordata = self.database["sensordata"]
 
     def get(self):
         sensor_data = []
@@ -27,8 +37,8 @@ class IOTSensor(Resource):
         if len(request.args) > 0:
             from_date = request.args['from']
             to_date = request.args['to']
-            sensordatas = sensordata.find({'date': {'$lte': to_date, '$gte': from_date}})
-            aggregate_data = sensordata.aggregate([{'$match': {'date': {'$gte': from_date, '$lte': to_date}}}, {
+            sensordatas = self.sensordata.find({'date': {'$lte': to_date, '$gte': from_date}})
+            aggregate_data = self.sensordata.aggregate([{'$match': {'date': {'$gte': from_date, '$lte': to_date}}}, {
                 '$group': {'_id': 'none', 'min': {'$min': "$temperature"}, 'max': {'$max': "$temperature"},
                            'avg': {'$avg': "$temperature"}}}])
             for data in aggregate_data:
@@ -41,9 +51,9 @@ class IOTSensor(Resource):
             else:
                 return {'message': 'Successfull', 'data': 'No Data Available'}
         else:
-            sensordatas = sensordata.find()
+            sensordatas = self.sensordata.find()
             # Used mongo aggregations to query for mean ,max and min
-            aggregate_data = sensordata.aggregate([{'$group': {'_id': 'none', 'min': {"$min": "$temperature"},
+            aggregate_data = self.sensordata.aggregate([{'$group': {'_id': 'none', 'min': {"$min": "$temperature"},
                                                                "max": {"$max": "$temperature"},
                                                                "avg": {"$avg": "$temperature"}}}])
             for data in aggregate_data:
@@ -60,7 +70,7 @@ class IOTSensor(Resource):
         date_time = datetime.strptime(date_time, "%Y-%m-%dT%H:%M:%S")
         data = {"temperature": json_data["reading"], "sensortype": json_data["sensorType"],
                 "date": date_time.date().isoformat(), "time": date_time.time().isoformat()}
-        sensor_data = sensordata.insert_one(data).inserted_id
+        sensor_data = self.sensordata.insert_one(data).inserted_id
         return {'message': 'Data Saved', "id": str(sensor_data)}
 
 
