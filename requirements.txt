@@ -6,7 +6,7 @@ click==7.1.2
 coverage==4.5.2
 cycler==0.10.0
 Flask==1.0.2
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 flask-restplus==0.12.1
 ftfy==4.4.3
 html5lib==1.0.1
